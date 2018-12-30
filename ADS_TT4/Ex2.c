@@ -11,7 +11,7 @@ struct Node* head;
 double sumLink(struct Node* head){
     if(head->next == NULL)
       return head->data;
-    return head->data+sumLiny(head->next);
+    return head->data+sumLink(head->next);
 }
 void addN(){
   double n;

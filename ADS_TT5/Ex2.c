@@ -68,7 +68,7 @@ void addN(struct Node** node, struct Node** tonode){
   which is merged from two initial lists*/
 struct Node* merge(struct Node* head1, struct Node* head2){
   struct Node* result = NULL;
-  if(head1->num < head2->num) result = head1;
+  if(head1->num < head2->num) result = head1;//if heah1 || head2 ==NULL
   else result = head2;
   struct Node* temp = NULL;
   while(1){
