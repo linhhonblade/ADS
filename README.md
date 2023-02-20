@@ -20,3 +20,5 @@ This repo should not be forgotten. Now I gonna continue by adding some small cod
 **mycodeschool**: I don't even remember why I have that folder
 
 **hackerrank**: practice problem solving skill while learning golang with hackerrank challenges
+
+For notes and documentation, see [https://kuroshiro.gitbook.io/](https://kuroshiro.gitbook.io/)
