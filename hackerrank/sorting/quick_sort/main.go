@@ -6,6 +6,7 @@ func partition(arr []int, low, high int) ([]int, int) {
 	pivot := arr[high]
 	i := low - 1
 	for j := low; j < high; j++ {
+		//Change this condition to reverse order
 		if arr[j] > pivot {
 			i++
 			arr[i], arr[j] = arr[j], arr[i]
