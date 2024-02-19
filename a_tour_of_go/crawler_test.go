@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
 
 type Fetcher interface {
@@ -10,7 +11,8 @@ type Fetcher interface {
 	Fetch(url string) (body string, urls []string, err error)
 }
 
-var fetched = make(map[string]bool)
+// Use sync.Map for better perf
+var fetched = new(sync.Map)
 
 // Crawl uses fetcher to recursively crawl
 // pages starting with url, to a maximum of depth.
@@ -21,20 +23,33 @@ func Crawl(url string, depth int, fetcher Fetcher) {
 	if depth <= 0 {
 		return
 	}
-	if _, ok := fetched[url]; ok {
+	if _, ok := fetched.Load(url); ok {
 		return
 	}
 	body, urls, err := fetcher.Fetch(url)
 	if err != nil {
 		fmt.Println(err)
-		fetched[url] = true
+		fetched.Store(url, true)
 		return
 	}
 	fmt.Printf("found: %s %q\n", url, body)
-	fetched[url] = true
+	// Using sync.WaitGroup to wait for all goroutines to finish,
+	// ensuring proper completion of the crawling process
+	wg := new(sync.WaitGroup)
+	fetched.Store(url, true)
 	for _, u := range urls {
-		Crawl(u, depth-1, fetcher)
+		// This increments the internal counter of the sync.WaitGroup,
+		// indicating that one goroutine is about to launch.
+		wg.Add(1)
+		go func(u string) {
+			defer wg.Done()
+			Crawl(u, depth-1, fetcher)
+		}(u)
 	}
+	// This blocks the main thread until the counter of the sync.WaitGroup becomes 0,
+	// meaning all goroutines launched with wg.Add() have finished.
+	wg.Wait()
+	// any code below won't be reached until all goroutines have completed.
 	return
 }
 
